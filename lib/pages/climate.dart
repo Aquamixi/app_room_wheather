@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'fetch_data.dart';
-import 'package:myroomwheather/Obj/album.dart';
+import 'package:myroomwheather/Obj/request.dart';
 
 class CurrWheather extends StatefulWidget {
   const CurrWheather({super.key});
@@ -10,12 +10,12 @@ class CurrWheather extends StatefulWidget {
 }
 
 class _CurrWheatherState extends State<CurrWheather> {
-  late Future<Album> futureAlbum;
+  late Future<Request> futureRequest;
 
   @override
   void initState() {
     super.initState();
-    futureAlbum = fetchAlbum();
+    futureRequest = fetchRequest();
   }
 
   @override
@@ -36,11 +36,11 @@ class _CurrWheatherState extends State<CurrWheather> {
       child: Center(
         child: Column(
           children: <Widget>[
-            FutureBuilder<Album>(
-              future: futureAlbum,
+            FutureBuilder<Request>(
+              future: futureRequest,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return Text(snapshot.data!.title);
+                  return Text(snapshot.data!.message);
                 } else if (snapshot.hasError) {
                   return Text('${snapshot.error}');
                 }
