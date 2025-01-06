@@ -12,16 +12,22 @@ class CurrWheather extends StatefulWidget {
 class _CurrWheatherState extends State<CurrWheather> {
   late Future<Request> futureRequest;
 
+  String temperature = '';
+
   @override
   void initState() {
     super.initState();
     futureRequest = fetchRequest();
   }
 
+  void reloadTemp() {
+    setState(() {
+      temperature = fetchRequest() as String;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    int temperature = 0;
-
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -33,34 +39,40 @@ class _CurrWheatherState extends State<CurrWheather> {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: Center(
-        child: Column(
-          children: <Widget>[
-            FutureBuilder<Request>(
-              future: futureRequest,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Text(snapshot.data!.message);
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                }
-
-                // By default, show a loading spinner.
-                return const CircularProgressIndicator();
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 150),
-            ),
-            Text(
-              "$temperature",
-              style: TextStyle(
-                color: Colors.white,
-                decoration: TextDecoration.none,
+      child: FutureBuilder<Request>(
+        future: futureRequest,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            temperature = snapshot.data!.temperature;
+            return Center(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 150),
+                  ),
+                  Text(
+                    temperature,
+                    style: TextStyle(
+                      color: Colors.white,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ],
               ),
+            );
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          }
+
+          // By default, show a loading spinner.
+          return Center(
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: const CircularProgressIndicator(),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

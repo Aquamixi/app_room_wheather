@@ -1,17 +1,17 @@
 class Request {
-  final String message;
+  final String temperature;
 
   const Request({
-    required this.message,
+    required this.temperature,
   });
 
   factory Request.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'message': String message,
+        'temperature': String temperature,
       } =>
         Request(
-          message: message,
+          temperature: temperature,
         ),
       _ => throw const FormatException('Failed to load'),
     };
