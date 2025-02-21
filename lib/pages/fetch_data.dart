@@ -4,7 +4,7 @@ import 'dart:convert';
 
 Future<Request> fetchRequest() async {
   final response = await http
-      .get(Uri.parse('http://192.168.0.30'));
+      .get(Uri.parse('http://192.168.0.50:59999/temperatura'));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
