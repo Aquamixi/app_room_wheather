@@ -12,8 +12,6 @@ class CurrWheather extends StatefulWidget {
 class _CurrWheatherState extends State<CurrWheather> {
   late Future<Request> futureRequest;
 
-  String temperature = '';
-
   @override
   void initState() {
     super.initState();
@@ -22,57 +20,57 @@ class _CurrWheatherState extends State<CurrWheather> {
 
   void reloadTemp() {
     setState(() {
-      temperature = fetchRequest() as String;
+      futureRequest = fetchRequest(); // Atualiza o Future para refazer a requisição
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.blue.shade200, // Light blue for the sky
-            Colors.grey.shade300, // Light grey for clouds
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Temperatura do ambiente"),
+        backgroundColor: Colors.blue.shade400,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: Colors.white),
+            onPressed: reloadTemp, // Chama a função de atualização ao clicar no botão
+          ),
+        ],
       ),
-      child: FutureBuilder<Request>(
-        future: futureRequest,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            temperature = snapshot.data!.temperature;
-            return Center(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 150),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.blue.shade200, // Light blue for the sky
+              Colors.grey.shade300, // Light grey for clouds
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: FutureBuilder<Request>(
+          future: futureRequest,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Erro: ${snapshot.error}', style: TextStyle(color: Colors.white)));
+            } else if (snapshot.hasData) {
+              return Center(
+                child: Text(
+                  "${snapshot.data!.temperature} °C",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.none,
                   ),
-                  Text(
-                    temperature,
-                    style: TextStyle(
-                      color: Colors.white,
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-
-          // By default, show a loading spinner.
-          return Center(
-            child: SizedBox(
-              height: 50,
-              width: 50,
-              child: const CircularProgressIndicator(),
-            ),
-          );
-        },
+                ),
+              );
+            }
+            return const Center(child: Text("Sem dados", style: TextStyle(color: Colors.white)));
+          },
+        ),
       ),
     );
   }
